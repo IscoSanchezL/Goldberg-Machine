@@ -1,9 +1,11 @@
 /* Máquinas Locas de Chispa — aplicación */
 (function () {
   'use strict';
+  var I = window.MLC_I18N, t = I.t;
   var E = window.MLC_ENGINE;
   if (!E || !window.Matter) {
-    document.querySelector('main').innerHTML = '<div class="card"><h2>No se pudo cargar el motor de física</h2><p>Revisa la conexión a internet y recarga la página.</p></div>';
+    document.querySelector('main').innerHTML = '<div class="card"><h2>' + t('engineFail') + '</h2><p>' + t('engineFail2') + '</p></div>';
+    I.apply(); I.mount();
     return;
   }
   var PIECES = E.PIECES, Body = Matter.Body;
@@ -97,24 +99,24 @@
     function setOn(v) {
       document.body.classList.toggle('teacher-on', v);
       try { if (v) sessionStorage.setItem(SKEY, '1'); else sessionStorage.removeItem(SKEY); } catch (e) { }
-      var b = $('teacherLockBtn'); if (b) b.textContent = v ? '🔓 Modo profe activado' : '🔒 Modo profe';
+      var b = $('teacherLockBtn'); if (b) b.textContent = v ? t('teacherOn') : t('teacherLock');
     }
     function ask() {
       modal(
-        '<h2>🔒 Modo profe</h2><p class="muted" style="margin:6px 0 16px">Ingresa el código para ver las guías "Para el profe" en esta pestaña.</p>' +
-        '<input id="teachPin" type="password" inputmode="numeric" autocomplete="off" placeholder="Código" ' +
+        '<h2>' + t('tmTitle') + '</h2><p class="muted" style="margin:6px 0 16px">' + t('tmP') + '</p>' +
+        '<input id="teachPin" type="password" inputmode="numeric" autocomplete="off" placeholder="' + t('tmPh') + '" ' +
         'style="width:100%;font:18px Fredoka,sans-serif;text-align:center;letter-spacing:4px;padding:12px;border-radius:14px;border:1.5px solid var(--line);background:var(--panel2);color:var(--ink);box-sizing:border-box;margin-bottom:6px">' +
         '<p id="teachErr" class="muted" style="color:var(--stop);min-height:20px;margin:2px 0 10px"></p>' +
         '<div class="row" style="justify-content:center">' +
-        '<button class="btn go" id="teachOk">Entrar</button>' +
-        '<button class="btn soft" id="teachCancel">Cancelar</button>' +
+        '<button class="btn go" id="teachOk">' + t('tmEnter') + '</button>' +
+        '<button class="btn soft" id="teachCancel">' + t('tmCancel') + '</button>' +
         '</div>',
         function (box) {
           var input = box.querySelector('#teachPin');
           input.focus();
           function tryUnlock() {
-            if (input.value === CODE) { setOn(true); closeModal(); toast('Modo profe activado en esta pestaña ✅'); }
-            else { box.querySelector('#teachErr').textContent = 'Código incorrecto.'; input.value = ''; input.focus(); }
+            if (input.value === CODE) { setOn(true); closeModal(); toast(t('tmOkToast')); }
+            else { box.querySelector('#teachErr').textContent = t('tmBad'); input.value = ''; input.focus(); }
           }
           box.querySelector('#teachOk').addEventListener('click', tryUnlock);
           box.querySelector('#teachCancel').addEventListener('click', closeModal);
@@ -128,7 +130,7 @@
   $('teacherLockBtn').addEventListener('click', function () {
     if (Teacher.isOn()) {
       Teacher.setOn(false);
-      toast('Modo profe desactivado en esta pestaña.');
+      toast(t('tmOff'));
     } else {
       Teacher.ask();
     }
@@ -271,12 +273,24 @@
     teach: ['Espacio libre para crear. Pide que nombre las máquinas simples que usó.', 'Reto: una máquina con 5 pasos o más.', 'Evaluación sugerida: ¿puede explicar causa → efecto → resultado?'] };
   var DEMO_ITEMS = LIBRE.fixed.concat(LIBRE.solution);
 
-  var LABEL = { rampa: '¡Plano inclinado!', rampaC: '¡Plano inclinado!', palanca: '¡Palanca!', rueda: '¡Rueda y eje!', carrito: '¡Rueda y eje!', polea: '¡Polea!',
-    cuna: '¡Cuña!', tornillo: '¡Tornillo!', resorte: '¡Resorte!', domino: '¡Dominós!', soplador: '¡Soplador!', cinta: '¡Cinta!', cubeta: '¡A la cubeta!' };
+  /* ---- idioma de niveles y piezas: el español es la base; el inglés viene de i18n.js ---- */
+  var KEYS = ['name', 'kicker', 'goal', 'idea', 'parts', 'examples', 'c2', 'hints', 'teach'];
+  var ALL_LV = LEVELS.concat([LIBRE]);
+  var ES_LV = {}; ALL_LV.forEach(function (l) { var o = {}; KEYS.forEach(function (k) { if (l[k] !== undefined) o[k] = l[k]; }); ES_LV[l.id] = o; });
+  var ES_PC = {}; Object.keys(PIECES).forEach(function (k) { ES_PC[k] = [PIECES[k].name, PIECES[k].desc]; });
+  function localize() {
+    var en = I.lang() === 'en';
+    ALL_LV.forEach(function (l) { var src = en ? I.LV[l.id] : ES_LV[l.id]; KEYS.forEach(function (k) { if (src && src[k] !== undefined) l[k] = src[k]; }); });
+    Object.keys(PIECES).forEach(function (k) { var src = en ? I.PC[k] : ES_PC[k]; if (src) { PIECES[k].name = src[0]; PIECES[k].desc = src[1]; } });
+  }
+  localize();
+
+  var LABEL = { rampa: 'rampa', rampaC: 'rampa', palanca: 'palanca', rueda: 'rueda', carrito: 'rueda', polea: 'polea', cuna: 'cuna', tornillo: 'tornillo', resorte: 'resorte', domino: 'domino', soplador: 'soplador', cinta: 'cinta', cubeta: 'cubeta' };
+  function lbl(type) { return LABEL[type] ? t('lbl_' + LABEL[type]) : null; }
   function countActivated(s, type) { var n = 0; Object.keys(s.activated).forEach(function (id) { var it = s.items.find(function (i) { return String(i.id) === id; }); if (it && it.type === type) n++; }); return n; }
   function itemCenter(s, it) { var b = s.itemBounds(it); return b ? { x: (b.minx + b.maxx) / 2, y: b.miny } : { x: it.x, y: it.y }; }
   function wireLabels(s, seen) {
-    s.on.activate = function (it) { var t = LABEL[it.type]; if (!t || seen[it.type]) return; seen[it.type] = 1; var p = itemCenter(s, it); s.label(t, p.x, Math.max(40, p.y - 12)); };
+    s.on.activate = function (it) { var tl = lbl(it.type); if (!tl || seen[it.type]) return; seen[it.type] = 1; var p = itemCenter(s, it); s.label(tl, p.x, Math.max(40, p.y - 12)); };
   }
 
   /* ================= PANTALLAS Y NAVEGACIÓN ================= */
@@ -320,56 +334,58 @@
     st.on.sound = Sound.play;
     st.onOverlay = function (c) {
       drawChispa(c, 150, st.FLOOR - 70, 1.3, mood, st.clock);
-      if (!pushed) { c.font = '700 20px Fredoka, sans-serif'; c.fillStyle = C().ink; c.fillText('¡Empuja aquí!', 270, st.FLOOR - 150); c.font = '34px sans-serif'; c.fillText('👇', 318, st.FLOOR - 92); }
+      if (!pushed) { c.font = '700 20px Fredoka, sans-serif'; c.fillStyle = C().ink; c.fillText(t('pushHere'), 270, st.FLOOR - 150); c.font = '34px sans-serif'; c.fillText('👇', 318, st.FLOOR - 92); }
     };
-    st.on.settled = function () { if (pushed) { mood = 'happy'; $('introBubble').innerHTML = '¡Cayeron <b>todas</b>! Solo empujé una ficha, pero cada una empujó a la siguiente. Eso es una <b>reacción en cadena</b>. Toca las tarjetas 👇'; lightCards(); } };
+    st.on.settled = function () { if (pushed) { mood = 'happy'; $('introBubble').setAttribute('data-i18n', 'bubbleDone'); $('introBubble').innerHTML = t('bubbleDone'); lightCards(); } };
     function push() {
       st.run(); pushed = true; mood = 'wow';
       var P = st.parts[st.items[0].id]; Body.setAngularVelocity(P.main, 0.06); Body.setVelocity(P.main, { x: 1.2, y: 0 }); Sound.play('pop');
     }
     function lightCards() { var cs = document.querySelectorAll('.ceecard'); cs.forEach(function (c) { c.classList.remove('lit'); }); litTimer.forEach(clearTimeout); litTimer = [];
       cs.forEach(function (c, i) { litTimer.push(setTimeout(function () { c.classList.add('lit'); Sound.play('click'); }, 400 + i * 700)); }); }
+    var bubbleKey = 'bubble0', bubbleVars = null;
+    function setBubble(k, v) { bubbleKey = k; bubbleVars = v || null; $('introBubble').setAttribute('data-i18n', k); $('introBubble').innerHTML = t(k, v); }
     function reset() { st.stop(); pushed = false; mood = 'think'; }
     document.querySelectorAll('[data-pred]').forEach(function (b) {
       b.addEventListener('click', function () {
         var p = b.dataset.pred; $('predWrap').hidden = true; $('introAfter').hidden = false;
-        $('introBubble').innerHTML = p === 'todas' ? '¡Buena predicción! Vamos a comprobarlo… 👀' : '¡Hmm! Tú dijiste <b>' + (p === 'una' ? 'solo la primera' : 'nada') + '</b>. Vamos a comprobarlo… 👀';
+        setBubble(p === 'todas' ? 'bubbleGood' : 'bubbleOther', { p: t(p === 'una' ? 'predOneTxt' : 'predNoneTxt') });
         push();
       });
     });
-    $('introCv').addEventListener('pointerdown', function () { if (!pushed) { $('predWrap').hidden = true; $('introAfter').hidden = false; $('introBubble').textContent = '¡Empujaste la primera! Mira lo que pasa… 👀'; push(); } });
-    $('introAgain').addEventListener('click', function () { reset(); $('predWrap').hidden = false; $('introAfter').hidden = true; $('introBubble').innerHTML = '¡Otra vez! Si empujo <b>solo el primero</b>… ¿qué crees que pasará?'; document.querySelectorAll('.ceecard').forEach(function (c) { c.classList.remove('lit'); }); });
+    $('introCv').addEventListener('pointerdown', function () { if (!pushed) { $('predWrap').hidden = true; $('introAfter').hidden = false; setBubble('bubblePushed'); push(); } });
+    $('introAgain').addEventListener('click', function () { reset(); $('predWrap').hidden = false; $('introAfter').hidden = true; setBubble('bubbleAgain'); document.querySelectorAll('.ceecard').forEach(function (c) { c.classList.remove('lit'); }); });
     document.querySelectorAll('.ceecard').forEach(function (c) { c.addEventListener('click', function () { c.classList.toggle('lit'); Sound.play('click'); }); });
     $('toDemo').addEventListener('click', function () { go('maquina'); });
-    return { stage: st, enter: function () { App.stage = st; App.leave = function () { litTimer.forEach(clearTimeout); }; } };
+    return { stage: st, refresh: function () { reset(); $('predWrap').hidden = false; $('introAfter').hidden = true; document.querySelectorAll('.ceecard').forEach(function (c) { c.classList.remove('lit'); }); setBubble('bubble0'); }, enter: function () { App.stage = st; App.leave = function () { litTimer.forEach(clearTimeout); }; } };
   })();
   function C() { return E.colors; }
 
   /* ================= 2. DEMO ================= */
   var Demo = (function () {
     var st = new E.Stage($('demoCv'), { editable: false });
-    var steps = [{ k: 'tornillo', t: '🌀 Tornillo sube la canica' }, { k: 'plano', t: '📐 Rampas' }, { k: 'domino', t: '⚡ Dominós' }, { k: 'campana', t: '🔔 ¡Campana!' }];
+    var steps = [{ k: 'tornillo', t: 'step1' }, { k: 'plano', t: 'step2' }, { k: 'domino', t: 'step3' }, { k: 'campana', t: 'step4' }];
     var chain = $('chain'), slow = false, seen = {};
     steps.forEach(function (s, i) { if (i) { var a = document.createElement('span'); a.className = 'arr'; a.textContent = '→'; chain.appendChild(a); }
-      var el = document.createElement('span'); el.className = 'step'; el.dataset.k = s.k; el.textContent = s.t; chain.appendChild(el); });
+      var el = document.createElement('span'); el.className = 'step'; el.dataset.k = s.k; el.setAttribute('data-i18n', s.t); el.textContent = t(s.t); chain.appendChild(el); });
     function lit(k) { var el = chain.querySelector('[data-k="' + k + '"]'); if (el && !el.classList.contains('lit')) { el.classList.add('lit'); } }
     function load() { st.setItems(DEMO_ITEMS); st.settleAll(); }
     load();
     st.on.sound = Sound.play;
-    st.on.mode = function (m) { var b = $('demoPlay'); if (m === 'run') { b.textContent = '■ Detener'; b.className = 'btn stop'; } else { b.textContent = '▶ Encender'; b.className = 'btn go'; } };
+    st.on.mode = function (m) { var b = $('demoPlay'); if (m === 'run') { b.textContent = t('demoStop'); b.className = 'btn stop'; } else { b.textContent = t('demoOn'); b.className = 'btn go'; } };
     st.on.activate = function (it) {
       var k = { tornillo: 'tornillo', rampa: 'plano', domino: 'domino' }[it.type]; if (k) lit(k);
-      var t = LABEL[it.type]; if (t && !seen[it.type]) { seen[it.type] = 1; var p = itemCenter(st, it); st.label(t, p.x, Math.max(40, p.y - 12)); }
+      var tl = lbl(it.type); if (tl && !seen[it.type]) { seen[it.type] = 1; var p = itemCenter(st, it); st.label(tl, p.x, Math.max(40, p.y - 12)); }
     };
-    st.on.win = function () { lit('campana'); $('demoMsg').textContent = '¡RIIING! 🔔 Una cadena de máquinas hizo algo muy simple: tocar una campana.'; Sound.play('win'); confetti(); };
+    st.on.win = function () { lit('campana'); $('demoMsg').textContent = t('demoWin'); Sound.play('win'); confetti(); };
     $('demoPlay').addEventListener('click', function () {
       if (st.mode === 'run') { st.stop(); resetChain(); $('demoMsg').textContent = ''; return; }
-      resetChain(); seen = {}; st.run(); Sound.play('start'); $('demoMsg').textContent = 'Sigue la canica con los ojos… 👀';
+      resetChain(); seen = {}; st.run(); Sound.play('start'); $('demoMsg').textContent = t('demoFollow');
     });
-    $('demoSlow').addEventListener('click', function () { slow = !slow; st.slow = slow; this.textContent = slow ? '🐇 Velocidad normal' : '🐢 Cámara lenta'; });
+    $('demoSlow').addEventListener('click', function () { slow = !slow; st.slow = slow; this.textContent = t(slow ? 'demoNormal' : 'demoSlow'); });
     $('toMap').addEventListener('click', function () { go('mapa'); });
     function resetChain() { chain.querySelectorAll('.step').forEach(function (e) { e.classList.remove('lit'); }); }
-    return { stage: st, enter: function () { App.stage = st; App.leave = function () { if (st.mode === 'run') st.stop(); resetChain(); $('demoMsg').textContent = ''; }; } };
+    return { stage: st, refresh: function () { st.on.mode(st.mode); $('demoSlow').textContent = t(slow ? 'demoNormal' : 'demoSlow'); }, enter: function () { App.stage = st; App.leave = function () { if (st.mode === 'run') st.stop(); resetChain(); $('demoMsg').textContent = ''; }; } };
   })();
 
   /* ================= 3. MAPA ================= */
@@ -382,23 +398,23 @@
       var svgNS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(svgNS, 'svg'); svg.setAttribute('class', 'path'); svg.setAttribute('viewBox', '0 0 100 100'); svg.setAttribute('preserveAspectRatio', 'none');
       var d = 'M' + pos[0][0] + ' ' + pos[0][1]; for (var i = 1; i < pos.length; i++) { var p0 = pos[i - 1], p1 = pos[i], mx = (p0[0] + p1[0]) / 2; d += ' C' + mx + ' ' + p0[1] + ' ' + mx + ' ' + p1[1] + ' ' + p1[0] + ' ' + p1[1]; }
       ['rgba(255,255,255,.75)', 'rgba(120,80,30,.35)'].forEach(function (col, k) { var path = document.createElementNS(svgNS, 'path'); path.setAttribute('d', d); path.setAttribute('fill', 'none'); path.setAttribute('stroke', col); path.setAttribute('stroke-width', k ? '3' : '12'); path.setAttribute('stroke-linecap', 'round'); path.setAttribute('vector-effect', 'non-scaling-stroke'); if (k) path.setAttribute('stroke-dasharray', '2 10'); svg.appendChild(path); });
-      map.appendChild(svg); var sign = document.createElement('div'); sign.className = 'sign'; sign.textContent = '🧭 Camino del inventor'; map.appendChild(sign);
+      map.appendChild(svg); var sign = document.createElement('div'); sign.className = 'sign'; sign.textContent = t('mapSign'); map.appendChild(sign);
       var S = stars(), next = LEVELS.find(function (l) { return !S[l.id]; });
       LEVELS.forEach(function (L, i) {
         var s = S[L.id] || 0, b = document.createElement('button'); b.className = 'station' + (next === L ? ' next' : '') + (L.id === 9 ? ' big' : '');
-        b.style.left = pos[i][0] + '%'; b.style.top = pos[i][1] + '%'; b.setAttribute('aria-label', 'Nivel ' + L.id + ': ' + L.name + ', ' + s + ' estrellas');
+        b.style.left = pos[i][0] + '%'; b.style.top = pos[i][1] + '%'; b.setAttribute('aria-label', t('mapAria', { n: L.id, name: L.name, s: s }));
         var disk = document.createElement('span'); disk.className = 'disk'; disk.appendChild(icon(L.icon));
         var num = document.createElement('span'); num.className = 'num'; num.textContent = L.id; disk.appendChild(num);
         var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = L.name;
         var st = document.createElement('span'); st.className = 'st'; st.textContent = '★'.repeat(s) + '☆'.repeat(3 - s);
         b.appendChild(disk); b.appendChild(nm); b.appendChild(st); b.addEventListener('click', function () { go('nivel-' + L.id); }); map.appendChild(b);
         var li = document.createElement('li'), lb = document.createElement('button'); lb.appendChild(icon(L.icon));
-        var t = document.createElement('span'); t.className = 't'; t.innerHTML = '<b>' + L.id + '. ' + L.name + '</b><span class="muted">' + L.kicker + '</span>'; lb.appendChild(t);
+        var tt = document.createElement('span'); tt.className = 't'; tt.innerHTML = '<b>' + L.id + '. ' + L.name + '</b><span class="muted">' + L.kicker + '</span>'; lb.appendChild(tt);
         var s2 = document.createElement('span'); s2.style.color = 'var(--star)'; s2.textContent = '★'.repeat(s) + '☆'.repeat(3 - s); lb.appendChild(s2);
         lb.addEventListener('click', function () { go('nivel-' + L.id); }); li.appendChild(lb); list.appendChild(li);
       });
       var done = LEVELS.filter(function (l) { return S[l.id]; }).length, tot = LEVELS.reduce(function (a, l) { return a + (S[l.id] || 0); }, 0);
-      $('progTxt').textContent = done + ' de ' + LEVELS.length + ' máquinas · ' + tot + ' ★'; $('progBar').style.width = (done / LEVELS.length * 100) + '%';
+      $('progTxt').textContent = t('progTxt', { d: done, t: LEVELS.length, s: tot }); $('progBar').style.width = (done / LEVELS.length * 100) + '%';
     }
     return { enter: function () { build(); App.stage = null; } };
   })();
@@ -411,36 +427,36 @@
     wireLabels(st, seen);
     st.on.mode = function (m) {
       var b = $('playBtn');
-      if (m === 'run') { b.textContent = '■ Detener'; b.className = 'btn stop'; $('hudMode').textContent = '▶ En marcha'; }
-      else { b.textContent = '▶ Jugar'; b.className = 'btn go'; $('hudMode').textContent = watching ? '👀 Ejemplo' : '✏️ Modo diseño'; }
+      if (m === 'run') { b.textContent = t('stop'); b.className = 'btn stop'; $('hudMode').textContent = t('running'); }
+      else { b.textContent = t('play'); b.className = 'btn go'; $('hudMode').textContent = watching ? t('exampleMode') : t('designMode'); }
       updateSel();
     };
     st.on.win = function () {
-      if (watching) { msg('¡Así funciona! 🔔 Ahora vuelve a tu diseño e inténtalo tú.'); Sound.play('win'); return; }
+      if (watching) { msg(t('watchWin')); Sound.play('win'); return; }
       Sound.play('win'); confetti();
       var r = L.free ? null : score(); if (r) { var S = store.get('stars', {}); if (!S[L.id] || r.s > S[L.id]) { S[L.id] = r.s; store.set('stars', S); } }
       setTimeout(function () { if (App.screen === 'nivel') winModal(r); }, 1300);
     };
     st.on.settled = function (won) {
       if (won || watching) return;
-      Sound.play('fail'); msg('La campana no sonó. Mira dónde se detuvo todo y ajusta una pieza. 🔧');
-      toast('La campana no sonó esta vez.', '↺ Ajustar mi máquina', function () { stopRun(); }, 7000);
+      Sound.play('fail'); msg(t('lvFail'));
+      toast(t('lvFailToast'), t('lvFailBtn'), function () { stopRun(); }, 7000);
     };
 
     function msg(t) { $('lvMsg').innerHTML = t || '&nbsp;'; }
     function added() { return st.items.filter(function (i) { return i.added; }).length; }
-    function hud() { var n = added(); $('hudCount').textContent = '🧩 ' + n + (n === 1 ? ' pieza agregada' : ' piezas agregadas'); }
+    function hud() { var n = added(); $('hudCount').textContent = t(n === 1 ? 'piece1' : 'pieceN', { n: n }); }
     function save() { if (!watching && L) store.set('design-' + L.id, st.getItems()); }
     function changed() { save(); hud(); updateSel(); }
     function pushUndo() { undo.push(JSON.stringify(st.items)); if (undo.length > 80) undo.shift(); }
     function snap(v) { return snapOn ? Math.round(v / 5) * 5 : Math.round(v); }
     function editable() {
-      if (watching) { toast('Estás mirando el ejemplo. Toca "Volver a mi diseño" para editar.'); return false; }
-      if (st.mode === 'run') { toast('Toca ■ Detener para cambiar tu máquina.', '■ Detener', stopRun); return false; }
+      if (watching) { toast(t('watchingEx')); return false; }
+      if (st.mode === 'run') { toast(t('stopFirst'), t('stop'), stopRun); return false; }
       return true;
     }
-    function stopRun() { if (st.mode === 'run') { st.stop(); hideToast(); msg('Tu máquina volvió a como la armaste. ¡Ajusta y prueba otra vez!'); } }
-    function startRun() { if (st.mode === 'run') return; closeLearn(); seen = {}; wireLabels(st, seen); st.sel = null; st.run(); Sound.play('start'); msg('¡Sigue la cadena con los ojos! 👀'); }
+    function stopRun() { if (st.mode === 'run') { st.stop(); hideToast(); msg(t('backToDesign')); } }
+    function startRun() { if (st.mode === 'run') return; closeLearn(); seen = {}; wireLabels(st, seen); st.sel = null; st.run(); Sound.play('start'); msg(t('followChain')); }
 
     /* ----- abrir nivel ----- */
     function open(level) {
@@ -449,11 +465,11 @@
       L = level; undo = []; armed = null; drag = null; hintI = 0; resetArm = 0; st.sel = null;
       var saved = store.get('design-' + L.id, null);
       st.setItems(saved || L.fixed.map(function (x) { return Object.assign({}, x); })); if (!saved) st.settleAll();
-      $('lvNum').textContent = L.free ? '★' : L.id; $('lvKicker').textContent = L.kicker; $('lvName').textContent = L.free ? L.name : 'Nivel ' + L.id + ' · ' + L.name; $('lvGoal').textContent = '🎯 ' + L.goal;
-      $('learnBtn').hidden = !!L.free; $('solBtn').textContent = L.free ? '👀 Ver un ejemplo' : '👀 Ver solución';
-      buildPalette(); hud(); updateSel();
+      $('lvNum').textContent = L.free ? '★' : L.id; $('lvKicker').textContent = L.kicker; $('lvName').textContent = L.free ? L.name : t('levelN', { n: L.id, name: L.name }); $('lvGoal').textContent = '🎯 ' + L.goal;
+      $('learnBtn').hidden = !!L.free; $('solBtn').textContent = L.free ? t('example') : t('solution');
+      ctlTexts(); buildPalette(); hud(); updateSel();
       $('teachBody').innerHTML = '<ul>' + L.teach.map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ul>';
-      msg(saved ? 'Recuperé tu diseño guardado. Presiona ▶ Jugar para probarlo.' : 'Arrastra piezas desde la caja de piezas a la mesa (o tócalas y luego toca la mesa). Después presiona ▶ Jugar.');
+      msg(saved ? t('savedDesign') : t('startMsg'));
       if (!L.free) showLearn(); else closeLearn();
       App.stage = st; App.leave = function () { if (watching) endWatch(true); if (st.mode === 'run') st.stop(); closeLearn(); endPaletteDrag(); };
     }
@@ -466,9 +482,9 @@
       var rest = document.createElement('div');
       rest.innerHTML = '<p class="idea">' + L.idea + '</p>' +
         '<div class="parts">' + L.parts.map(function (p) { return '<div><b>' + p[0] + '</b><br>' + p[1] + '</div>'; }).join('') + '</div>' +
-        '<p style="margin:10px 0 2px"><b style="font-family:Fredoka,Nunito,sans-serif">La encuentras en:</b></p><div class="chips">' + L.examples.map(function (e) { return '<span>' + e + '</span>'; }).join('') + '</div>' +
-        '<p class="muted" style="margin-top:10px">🎯 <b>Tu reto:</b> ' + L.goal + '</p>' +
-        '<div class="row" style="margin-top:12px"><button class="btn go" id="lGo">¡A construir! 🛠️</button><button class="btn soft" id="lWatch">👀 Mira cómo funciona</button></div>';
+        '<p style="margin:10px 0 2px"><b style="font-family:Fredoka,Nunito,sans-serif">' + t('foundIn') + '</b></p><div class="chips">' + L.examples.map(function (e) { return '<span>' + e + '</span>'; }).join('') + '</div>' +
+        '<p class="muted" style="margin-top:10px">' + t('yourGoal').replace(/^(\S+) (.*)$/, '$1 <b>$2</b>') + ' ' + L.goal + '</p>' +
+        '<div class="row" style="margin-top:12px"><button class="btn go" id="lGo">' + t('goBuild') + '</button><button class="btn soft" id="lWatch">' + t('watchWork') + '</button></div>';
       box.appendChild(rest); $('learn').hidden = false;
       $('lGo').onclick = function () { closeLearn(); Sound.play('click'); }; $('lWatch').onclick = function () { closeLearn(); watch(); };
       setTimeout(function () { var g = $('lGo'); if (g) g.focus(); }, 50);
@@ -480,13 +496,13 @@
       if (watching) return; if (st.mode === 'run') st.stop();
       watching = { items: st.getItems(), undo: undo.slice() }; st.sel = null; armed = null; refreshPalette();
       st.setItems(L.fixed.map(function (x) { return Object.assign({}, x); }).concat(L.solution.map(function (x) { return Object.assign({ added: true }, x); }))); st.settleAll();
-      $('watchBar').hidden = false; $('hudMode').textContent = '👀 Ejemplo'; msg('Así se puede resolver. Mira la cadena… 👀'); hud(); updateSel();
+      $('watchBar').hidden = false; $('hudMode').textContent = t('exampleMode'); msg(t('howSolve')); hud(); updateSel();
       setTimeout(function () { if (watching && st.mode !== 'run') { seen = {}; wireLabels(st, seen); st.run(); } }, 700);
     }
     function endWatch(silent) {
       if (!watching) return; if (st.mode === 'run') st.stop();
       st.setItems(watching.items); undo = watching.undo; watching = null; $('watchBar').hidden = true; st.on.mode('edit'); hud(); updateSel();
-      if (!silent) msg('Volviste a tu diseño. ¡Ahora inténtalo tú!');
+      if (!silent) msg(t('backMine'));
     }
     $('watchEnd').addEventListener('click', function () { endWatch(); });
 
@@ -494,22 +510,22 @@
     function score() {
       var ok2 = L.check2 ? L.check2(st) : (L.machine ? st.activatedMachines().indexOf(L.machine) >= 0 : true);
       var n = added(), ok3 = ok2 && n <= L.par;
-      return { s: 1 + (ok2 ? 1 : 0) + (ok3 ? 1 : 0), crit: [[true, '🔔 Hiciste sonar la campana'], [ok2, L.c2], [ok3, '🧩 Con ' + L.par + (L.par === 1 ? ' pieza agregada' : ' piezas agregadas') + ' o menos (usaste ' + n + ')']] };
+      return { s: 1 + (ok2 ? 1 : 0) + (ok3 ? 1 : 0), crit: [[true, t('crit1')], [ok2, L.c2], [ok3, t('crit3', { par: L.par, pz: t(L.par === 1 ? 'pzOne' : 'pzMany'), n: n })]] };
     }
     function winModal(r) {
       if (!r) {
-        var used = st.activatedMachines().map(function (m) { return { plano: '📐 Plano inclinado', palanca: '⚖️ Palanca', rueda: '🛞 Rueda y eje', polea: '🪢 Polea', cuna: '🔺 Cuña', tornillo: '🌀 Tornillo', resorte: '🟥 Resorte' }[m]; }).filter(Boolean);
-        modal('<div style="font-size:56px">🏆</div><h2>¡Tu máquina funciona!</h2><p class="muted">Máquinas que participaron:</p><div class="chips" style="justify-content:center">' + (used.length ? used.map(function (u) { return '<span>' + u + '</span>'; }).join('') : '<span>¡Pura creatividad!</span>') + '</div>' +
-          '<div class="row" style="justify-content:center;margin-top:16px"><button class="btn go" id="mKeep">Seguir inventando</button><button class="btn soft" id="mMap">Mapa</button></div>',
+        var used = st.activatedMachines().map(function (m) { return { plano: t('m_plano'), palanca: t('m_palanca'), rueda: t('m_rueda'), polea: t('m_polea'), cuna: t('m_cuna'), tornillo: t('m_tornillo'), resorte: t('m_resorte') }[m]; }).filter(Boolean);
+        modal('<div style="font-size:56px">🏆</div><h2>' + t('mWorks') + '</h2><p class="muted">' + t('mUsed') + '</p><div class="chips" style="justify-content:center">' + (used.length ? used.map(function (u) { return '<span>' + u + '</span>'; }).join('') : '<span>' + t('mCreative') + '</span>') + '</div>' +
+          '<div class="row" style="justify-content:center;margin-top:16px"><button class="btn go" id="mKeep">' + t('mKeep') + '</button><button class="btn soft" id="mMap">' + t('mMap') + '</button></div>',
           function () { $('mKeep').onclick = function () { closeModal(); stopRun(); }; $('mMap').onclick = function () { closeModal(); go('mapa'); }; });
         return;
       }
       var nextL = LEVELS.find(function (l) { return l.id === L.id + 1; });
       var starsHtml = [0, 1, 2].map(function (i) { return '<span class="' + (i < r.s ? '' : 'off') + '">★</span>'; }).join('');
-      modal('<h2>' + (r.s === 3 ? '¡Máquina perfecta! 🏆' : '¡Lo lograste! 🎉') + '</h2><div class="stars">' + starsHtml + '</div>' +
+      modal('<h2>' + (r.s === 3 ? t('mPerfect') : t('mDone')) + '</h2><div class="stars">' + starsHtml + '</div>' +
         '<ul class="mcrit">' + r.crit.map(function (c) { return '<li>' + (c[0] ? '✅ ' : '⬜ ') + c[1] + '</li>'; }).join('') + '</ul>' +
-        '<div class="row" style="justify-content:center;margin-top:12px">' + (nextL ? '<button class="btn go" id="mNext">Siguiente máquina →</button>' : '<button class="btn go" id="mFree">Ir al taller libre →</button>') +
-        '</div><div class="row" style="justify-content:center;margin-top:10px"><button class="btn soft sm" id="mRetry">↺ Mejorar</button><button class="btn soft sm" id="mMap">🗺️ Mapa</button></div>',
+        '<div class="row" style="justify-content:center;margin-top:12px">' + (nextL ? '<button class="btn go" id="mNext">' + t('mNext') + '</button>' : '<button class="btn go" id="mFree">' + t('mFree') + '</button>') +
+        '</div><div class="row" style="justify-content:center;margin-top:10px"><button class="btn soft sm" id="mRetry">' + t('mRetry') + '</button><button class="btn soft sm" id="mMap">' + t('mMapBtn') + '</button></div>',
         function () {
           if ($('mNext')) $('mNext').onclick = function () { closeModal(); go('nivel-' + nextL.id); };
           if ($('mFree')) $('mFree').onclick = function () { closeModal(); go('libre'); };
@@ -518,14 +534,14 @@
     }
 
     /* ----- paleta ----- */
-    var CATS = [['Máquinas simples', ['rampa', 'rampaC', 'palanca', 'rueda', 'carrito', 'polea', 'cuna', 'tornillo']], ['Objetos', ['canica', 'bola', 'domino', 'domino5', 'caja']],
-      ['Construcción', ['plataforma', 'muro', 'resorte', 'soplador', 'cinta', 'cubeta']], ['Meta', ['campana']]];
-    function pname(t) { return t === 'domino5' ? 'Fila de 5 dominós' : PIECES[t].name; }
-    function pdesc(t) { return t === 'domino5' ? 'Pone 5 dominós en fila de una vez.' : PIECES[t].desc; }
+    var CATS = [['cat1', ['rampa', 'rampaC', 'palanca', 'rueda', 'carrito', 'polea', 'cuna', 'tornillo']], ['cat2', ['canica', 'bola', 'domino', 'domino5', 'caja']],
+      ['cat3', ['plataforma', 'muro', 'resorte', 'soplador', 'cinta', 'cubeta']], ['cat4', ['campana']]];
+    function pname(ty) { return ty === 'domino5' ? t('domino5') : PIECES[ty].name; }
+    function pdesc(ty) { return ty === 'domino5' ? t('domino5d') : PIECES[ty].desc; }
     function buildPalette() {
       var p = $('palette'); p.innerHTML = '';
       CATS.forEach(function (cat) {
-        var h = document.createElement('h3'); h.textContent = cat[0]; p.appendChild(h);
+        var h = document.createElement('h3'); h.textContent = t(cat[0]); p.appendChild(h);
         var g = document.createElement('div'); g.className = 'pgrid';
         cat[1].forEach(function (t) {
           var b = document.createElement('button'); b.className = 'piece' + (L.recommend.indexOf(t) >= 0 ? ' rec' : ''); b.dataset.type = t; b.title = pdesc(t);
@@ -548,15 +564,15 @@
     function paletteUp(e) {
       if (!pal) return; var p = pal; endPaletteDrag();
       if (p.moved) { var w = worldFrom(e); if (w && editable()) placeAt(p.type, w.x, w.y); }
-      else { armed = armed === p.type ? null : p.type; refreshPalette(); Sound.play('click'); if (armed) msg('Toca la mesa para poner: <b>' + pname(armed) + '</b>. ' + pdesc(armed) + ' (Toca otra vez la pieza para soltarla.)'); else msg(''); }
+      else { armed = armed === p.type ? null : p.type; refreshPalette(); Sound.play('click'); if (armed) msg(t('armedMsg', { n: pname(armed), d: pdesc(armed) })); else msg(''); }
     }
     function endPaletteDrag() { pal = null; st.ghost = null; if (chip) { chip.remove(); chip = null; } }
-    function placeAt(t, x, y) {
+    function placeAt(ty, x, y) {
       pushUndo(); var it;
-      if (t === 'domino5') { for (var k = 0; k < 5; k++) it = st.addItem('domino', snap(x + k * 40), snap(y)); }
-      else it = st.addItem(t, snap(x), snap(y));
+      if (ty === 'domino5') { for (var k = 0; k < 5; k++) it = st.addItem('domino', snap(x + k * 40), snap(y)); }
+      else it = st.addItem(ty, snap(x), snap(y));
       st.sel = it; Sound.play('pop'); changed(); closeLearn();
-      if (t === 'campana' || t === 'canica') msg('Pusiste ' + pname(t).toLowerCase() + '. Puedes moverla arrastrándola.');
+      if (ty === 'campana' || ty === 'canica') msg(t('placedMsg', { n: pname(ty).toLowerCase() }));
     }
 
     /* ----- mesa: seleccionar, mover, colocar ----- */
@@ -599,18 +615,19 @@
 
     /* ----- controles ----- */
     $('playBtn').addEventListener('click', function () { if (st.mode === 'run') { stopRun(); if (watching) st.on.mode('edit'); } else { if (watching) { st.run(); return; } startRun(); } });
-    $('undoBtn').addEventListener('click', function () { if (!editable()) return; var u = undo.pop(); if (!u) { toast('No hay nada que deshacer.'); return; } st.setItems(JSON.parse(u)); st.sel = null; changed(); Sound.play('click'); });
-    $('clearBtn').addEventListener('click', function () { if (!editable()) return; if (!added()) { toast('Todavía no agregaste piezas.'); return; } pushUndo(); st.items.filter(function (i) { return i.added; }).forEach(function (i) { st.removeItem(i); }); changed(); Sound.play('del'); msg('Quité tus piezas. (Puedes ↶ Deshacer.)'); });
+    $('undoBtn').addEventListener('click', function () { if (!editable()) return; var u = undo.pop(); if (!u) { toast(t('nothingUndo')); return; } st.setItems(JSON.parse(u)); st.sel = null; changed(); Sound.play('click'); });
+    $('clearBtn').addEventListener('click', function () { if (!editable()) return; if (!added()) { toast(t('noPieces')); return; } pushUndo(); st.items.filter(function (i) { return i.added; }).forEach(function (i) { st.removeItem(i); }); changed(); Sound.play('del'); msg(t('removedMsg')); });
     $('resetBtn').addEventListener('click', function () {
       if (watching) endWatch(true); if (st.mode === 'run') st.stop();
-      var now = Date.now(); if (now - resetArm > 3500) { resetArm = now; this.textContent = '⟳ ¿Seguro? Toca otra vez'; var self = this; setTimeout(function () { self.textContent = '⟳ Reiniciar nivel'; }, 3500); return; }
-      resetArm = 0; this.textContent = '⟳ Reiniciar nivel'; pushUndo(); store.del('design-' + L.id); st.setItems(L.fixed.map(function (x) { return Object.assign({}, x); })); st.settleAll(); st.sel = null; changed(); msg('El nivel volvió a empezar. (Puedes ↶ Deshacer.)');
+      var now = Date.now(); if (now - resetArm > 3500) { resetArm = now; this.textContent = t('resetSure'); var self = this; setTimeout(function () { self.textContent = t('reset'); }, 3500); return; }
+      resetArm = 0; this.textContent = t('reset'); pushUndo(); store.del('design-' + L.id); st.setItems(L.fixed.map(function (x) { return Object.assign({}, x); })); st.settleAll(); st.sel = null; changed(); msg(t('resetMsg'));
     });
-    $('slowBtn').addEventListener('click', function () { st.slow = !st.slow; this.textContent = st.slow ? '🐇 Normal' : '🐢 Lento'; });
-    $('snapBtn').addEventListener('click', function () { snapOn = !snapOn; store.set('snap', snapOn); this.textContent = '🧲 Imán: ' + (snapOn ? 'sí' : 'no'); });
-    $('snapBtn').textContent = '🧲 Imán: ' + (snapOn ? 'sí' : 'no');
+    $('slowBtn').addEventListener('click', function () { st.slow = !st.slow; this.textContent = t(st.slow ? 'normal' : 'slow'); });
+    $('snapBtn').addEventListener('click', function () { snapOn = !snapOn; store.set('snap', snapOn); this.textContent = t('snap', { v: t(snapOn ? 'yes' : 'no') }); });
+    function ctlTexts() { $('resetBtn').textContent = t('reset'); $('slowBtn').textContent = t(st.slow ? 'normal' : 'slow'); $('snapBtn').textContent = t('snap', { v: t(snapOn ? 'yes' : 'no') }); $('playBtn').textContent = t(st.mode === 'run' ? 'stop' : 'play'); }
+    ctlTexts();
     $('learnBtn').addEventListener('click', function () { if (watching) endWatch(true); if (st.mode === 'run') st.stop(); showLearn(); });
-    $('hintBtn').addEventListener('click', function () { var h = L.hints[Math.min(hintI, L.hints.length - 1)]; msg('💡 ' + h); hintI++; if (hintI > L.hints.length) msg('💡 ' + h + ' Si quieres, toca 👀 para ver una solución.'); Sound.play('click'); });
+    $('hintBtn').addEventListener('click', function () { var h = L.hints[Math.min(hintI, L.hints.length - 1)]; msg('💡 ' + h); hintI++; if (hintI > L.hints.length) msg('💡 ' + h + t('hintSolution')); Sound.play('click'); });
     $('solBtn').addEventListener('click', function () { closeLearn(); watch(); });
 
     /* ----- teclado ----- */
@@ -641,8 +658,18 @@
     if (s) { try { s.tick(dt); s.draw(); } catch (err) { if (window.console) console.error(err); } }
     requestAnimationFrame(frame);
   }
+  var started = false;
+  I.onChange(function () {
+    localize(); if (!started) return;
+    Teacher.setOn(Teacher.isOn());
+    route();
+    if (App.screen === 'inicio') Intro.refresh(); else if (App.screen === 'maquina') Demo.refresh();
+  });
+  I.mount();
   Theme.apply();
+  I.apply();
   route();
+  started = true;
   requestAnimationFrame(frame);
   window.MLC = { App: App, Level: Level, LEVELS: LEVELS, LIBRE: LIBRE, DEMO_ITEMS: DEMO_ITEMS, Stage: E.Stage, go: go };
 })();

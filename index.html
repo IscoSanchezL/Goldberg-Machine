@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Máquinas Locas de Chispa</title>
 <meta name="description" content="Juego para aprender reacciones en cadena y las máquinas simples construyendo máquinas de Rube Goldberg con física real.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,6 +41,10 @@ button{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--ui);outline-offset:2px;border-radius:10px}
 [hidden]{display:none!important}
 
+/* selector de idioma */
+.lang{display:inline-flex;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel);flex:none}
+.lang button{border:0;background:transparent;font-family:Fredoka,sans-serif;font-weight:600;font-size:14px;padding:8px 10px;cursor:pointer;color:var(--muted)}
+.lang button[aria-pressed="true"]{background:var(--ui);color:#fff}
 /* barra superior */
 .appbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;display:flex;align-items:center;gap:10px;padding:10px 16px;
   background:color-mix(in srgb,var(--panel) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
@@ -218,16 +223,17 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:18px 16px 26p
 </style>
 
 <header class="appbar">
-  <button class="iconbtn back" id="backBtn" aria-label="Atrás">← <span>Atrás</span></button>
-  <a class="brand" href="#inicio" aria-label="Inicio"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="16" width="44" height="38" rx="14" fill="#6D45F5"/><rect x="16" y="22" width="32" height="22" rx="8" fill="#14163A"/><circle cx="26" cy="33" r="4" fill="#8EF0FF"/><circle cx="38" cy="33" r="4" fill="#8EF0FF"/><path d="M27 39q5 4 10 0" stroke="#8EF0FF" stroke-width="2.5" fill="none" stroke-linecap="round"/><line x1="32" y1="16" x2="32" y2="7" stroke="#5230D6" stroke-width="3"/><circle cx="32" cy="6" r="4.5" fill="#FFC23A"/></svg><span>Máquinas Locas</span></a>
-  <nav class="tabs" aria-label="Secciones">
-    <a href="#inicio" data-r="inicio"><span class="n">1</span><span class="t">Reacción en cadena</span></a>
-    <a href="#maquina" data-r="maquina"><span class="n">2</span><span class="t">La máquina</span></a>
-    <a href="#mapa" data-r="mapa"><span class="n">3</span><span class="t">Aprende</span></a>
-    <a href="#libre" data-r="libre"><span class="n">4</span><span class="t">Construye</span></a>
+  <button class="iconbtn back" id="backBtn" data-i18n-attr="aria-label:back">← <span data-i18n="back">Atrás</span></button>
+  <a class="brand" href="#inicio" data-i18n-attr="aria-label:home"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="16" width="44" height="38" rx="14" fill="#6D45F5"/><rect x="16" y="22" width="32" height="22" rx="8" fill="#14163A"/><circle cx="26" cy="33" r="4" fill="#8EF0FF"/><circle cx="38" cy="33" r="4" fill="#8EF0FF"/><path d="M27 39q5 4 10 0" stroke="#8EF0FF" stroke-width="2.5" fill="none" stroke-linecap="round"/><line x1="32" y1="16" x2="32" y2="7" stroke="#5230D6" stroke-width="3"/><circle cx="32" cy="6" r="4.5" fill="#FFC23A"/></svg><span data-i18n="brand">Máquinas Locas</span></a>
+  <nav class="tabs" data-i18n-attr="aria-label:sections">
+    <a href="#inicio" data-r="inicio"><span class="n">1</span><span class="t" data-i18n="tab1">Reacción en cadena</span></a>
+    <a href="#maquina" data-r="maquina"><span class="n">2</span><span class="t" data-i18n="tab2">La máquina</span></a>
+    <a href="#mapa" data-r="mapa"><span class="n">3</span><span class="t" data-i18n="tab3">Aprende</span></a>
+    <a href="#libre" data-r="libre"><span class="n">4</span><span class="t" data-i18n="tab4">Construye</span></a>
   </nav>
-  <button class="iconbtn" id="soundBtn" aria-label="Sonido">🔊</button>
-  <button class="iconbtn" id="themeBtn" aria-label="Cambiar tema">🌙</button>
+  <div class="lang" id="lang" role="group" aria-label="Idioma / Language"><button type="button" data-l="es">ES</button><button type="button" data-l="en">EN</button></div>
+  <button class="iconbtn" id="soundBtn" data-i18n-attr="aria-label:sound">🔊</button>
+  <button class="iconbtn" id="themeBtn" data-i18n-attr="aria-label:theme">🌙</button>
 </header>
 
 <main>
@@ -235,30 +241,30 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:18px 16px 26p
   <section id="s-inicio" class="screen" hidden>
     <div class="card intro-grid">
       <div>
-        <span class="eyebrow">Paso 1 · ¿Qué es una reacción en cadena?</span>
+        <span class="eyebrow" data-i18n="s1eyebrow">Paso 1 · ¿Qué es una reacción en cadena?</span>
         <div class="chispa-row" style="margin-top:10px">
           <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="16" width="44" height="38" rx="14" fill="#6D45F5"/><rect x="16" y="22" width="32" height="22" rx="8" fill="#14163A"/><circle cx="26" cy="33" r="4" fill="#8EF0FF"/><circle cx="38" cy="33" r="4" fill="#8EF0FF"/><path d="M27 39q5 4 10 0" stroke="#8EF0FF" stroke-width="2.5" fill="none" stroke-linecap="round"/><line x1="32" y1="16" x2="32" y2="7" stroke="#5230D6" stroke-width="3"/><circle cx="32" cy="6" r="4.5" fill="#FFC23A"/></svg>
-          <div class="bubble" id="introBubble">¡Hola! Soy <b>Chispa</b> ⚡. Mira esta fila de dominós. Si empujo <b>solo el primero</b>… ¿qué crees que pasará?</div>
+          <div class="bubble" id="introBubble" data-i18n="bubble0">¡Hola! Soy <b>Chispa</b> ⚡. Mira esta fila de dominós. Si empujo <b>solo el primero</b>… ¿qué crees que pasará?</div>
         </div>
       </div>
-      <div class="stagewrap"><canvas id="introCv" role="img" aria-label="Fila de diez dominós listos para caer"></canvas></div>
+      <div class="stagewrap"><canvas id="introCv" role="img" data-i18n-attr="aria-label:introCv"></canvas></div>
       <div id="predWrap" class="pred">
-        <button class="btn" data-pred="todas">✅ Caerán todas</button>
-        <button class="btn soft" data-pred="una">Solo caerá la primera</button>
-        <button class="btn soft" data-pred="nada">No pasará nada</button>
+        <button class="btn" data-pred="todas" data-i18n="predAll">✅ Caerán todas</button>
+        <button class="btn soft" data-pred="una" data-i18n="predOne">Solo caerá la primera</button>
+        <button class="btn soft" data-pred="nada" data-i18n="predNone">No pasará nada</button>
       </div>
       <div id="introAfter" hidden>
         <div class="cee">
-          <div class="ceecard" data-i="0"><div class="em">👆</div><b>1. CAUSA</b><span class="muted">Algo empieza el movimiento: empujé la primera ficha.</span></div>
-          <div class="ceecard" data-i="1"><div class="em">➡️➡️</div><b>2. EFECTO</b><span class="muted">Cada ficha empuja a la siguiente. ¡La energía viaja!</span></div>
-          <div class="ceecard" data-i="2"><div class="em">🔔</div><b>3. RESULTADO</b><span class="muted">Al final pasa algo: ¡caen todas!</span></div>
+          <div class="ceecard" data-i="0"><div class="em">👆</div><b data-i18n="cee1t">1. CAUSA</b><span class="muted" data-i18n="cee1d">Algo empieza el movimiento: empujé la primera ficha.</span></div>
+          <div class="ceecard" data-i="1"><div class="em">➡️➡️</div><b data-i18n="cee2t">2. EFECTO</b><span class="muted" data-i18n="cee2d">Cada ficha empuja a la siguiente. ¡La energía viaja!</span></div>
+          <div class="ceecard" data-i="2"><div class="em">🔔</div><b data-i18n="cee3t">3. RESULTADO</b><span class="muted" data-i18n="cee3d">Al final pasa algo: ¡caen todas!</span></div>
         </div>
         <div class="row" style="margin-top:16px">
-          <button class="btn go" id="toDemo">Ver una máquina de Goldberg →</button>
-          <button class="btn soft" id="introAgain">↺ Otra vez</button>
+          <button class="btn go" id="toDemo" data-i18n="toDemo">Ver una máquina de Goldberg →</button>
+          <button class="btn soft" id="introAgain" data-i18n="again">↺ Otra vez</button>
         </div>
       </div>
-      <details class="teacher"><summary>Para el profe</summary><ul>
+      <details class="teacher"><summary data-i18n="forTeacher">Para el profe</summary><ul data-i18n="teach1">
         <li><b>Objetivo:</b> reconocer la secuencia causa → efecto → resultado.</li>
         <li>Pide que <b>prediga</b> antes de empujar y que explique por qué acertó o no.</li>
         <li>Pregunta: “¿qué pasaría si quitamos una ficha del medio?” (la cadena se rompe).</li>
@@ -269,18 +275,18 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:18px 16px 26p
   <!-- 2. LA MÁQUINA DE GOLDBERG -->
   <section id="s-maquina" class="screen" hidden>
     <div class="card">
-      <span class="eyebrow">Paso 2 · La máquina de Rube Goldberg</span>
-      <h1 style="margin-top:6px">Mucho trabajo para algo muy simple</h1>
-      <p class="muted" style="max-width:75ch">Rube Goldberg dibujaba máquinas complicadísimas que hacían cosas sencillas. Esta hace sonar una campana 🔔 usando una <b>cadena de máquinas</b>. Enciéndela y mira cómo se ilumina cada paso.</p>
+      <span class="eyebrow" data-i18n="s2eyebrow">Paso 2 · La máquina de Rube Goldberg</span>
+      <h1 style="margin-top:6px" data-i18n="s2h">Mucho trabajo para algo muy simple</h1>
+      <p class="muted" style="max-width:75ch" data-i18n="s2p">Rube Goldberg dibujaba máquinas complicadísimas que hacían cosas sencillas. Esta hace sonar una campana 🔔 usando una <b>cadena de máquinas</b>. Enciéndela y mira cómo se ilumina cada paso.</p>
       <div class="chain" id="chain"></div>
-      <div class="stagewrap" style="margin-top:8px"><canvas id="demoCv" role="img" aria-label="Máquina de Goldberg: tornillo, rampas, dominós y campana"></canvas></div>
+      <div class="stagewrap" style="margin-top:8px"><canvas id="demoCv" role="img" data-i18n-attr="aria-label:demoCv"></canvas></div>
       <div class="controls">
-        <button class="btn go" id="demoPlay">▶ Encender</button>
-        <button class="btn soft" id="demoSlow">🐢 Cámara lenta</button>
-        <button class="btn" id="toMap" style="margin-left:auto">Aprender las máquinas →</button>
+        <button class="btn go" id="demoPlay" data-i18n="demoOn">▶ Encender</button>
+        <button class="btn soft" id="demoSlow" data-i18n="demoSlow">🐢 Cámara lenta</button>
+        <button class="btn" id="toMap" style="margin-left:auto" data-i18n="toMap">Aprender las máquinas →</button>
       </div>
       <p class="msg" id="demoMsg"></p>
-      <details class="teacher"><summary>Para el profe</summary><ul>
+      <details class="teacher"><summary data-i18n="forTeacher">Para el profe</summary><ul data-i18n="teach2">
         <li>Pausa con cámara lenta y pide que nombre cada paso de la cadena.</li>
         <li>Pregunta: “¿cuál es la causa inicial y cuál el resultado final?”.</li>
         <li>Anticipa: cada pieza es una <b>máquina simple</b>; en el paso 3 las aprenderá una por una.</li>
@@ -291,8 +297,8 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:18px 16px 26p
   <!-- 3. MAPA -->
   <section id="s-mapa" class="screen" hidden>
     <div class="maphead">
-      <div><span class="eyebrow">Paso 3 · El camino del inventor</span><h1 style="margin-top:6px">Aprende cada máquina simple</h1><p class="muted">Cada parada tiene una idea corta y un reto. Todas están abiertas: ve en orden o salta a la que quieras.</p></div>
-      <div class="progress"><div class="row" style="justify-content:space-between"><b style="font-family:Fredoka,Nunito,sans-serif">Tu progreso</b><span id="progTxt" class="muted"></span></div><div class="bar"><i id="progBar" style="width:0%"></i></div></div>
+      <div><span class="eyebrow" data-i18n="s3eyebrow">Paso 3 · El camino del inventor</span><h1 style="margin-top:6px" data-i18n="s3h">Aprende cada máquina simple</h1><p class="muted" data-i18n="s3p">Cada parada tiene una idea corta y un reto. Todas están abiertas: ve en orden o salta a la que quieras.</p></div>
+      <div class="progress"><div class="row" style="justify-content:space-between"><b style="font-family:Fredoka,Nunito,sans-serif" data-i18n="progress">Tu progreso</b><span id="progTxt" class="muted"></span></div><div class="bar"><i id="progBar" style="width:0%"></i></div></div>
     </div>
     <div class="map" id="map"></div>
     <ol class="maplist" id="mapList"></ol>
@@ -301,45 +307,45 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:18px 16px 26p
   <!-- NIVEL / CONSTRUCCIÓN LIBRE -->
   <section id="s-nivel" class="screen" hidden>
     <div class="lvhead">
-      <div class="lvtitle"><div class="lvnum" id="lvNum">1</div><div><span class="eyebrow" id="lvKicker">Máquina simple</span><h1 id="lvName">Nivel</h1><p class="goal" id="lvGoal"></p></div></div>
+      <div class="lvtitle"><div class="lvnum" id="lvNum">1</div><div><span class="eyebrow" id="lvKicker"></span><h1 id="lvName"></h1><p class="goal" id="lvGoal"></p></div></div>
       <div class="row">
-        <button class="btn soft sm" id="learnBtn">📖 Aprender</button>
-        <button class="btn soft sm" id="hintBtn">💡 Pista</button>
-        <button class="btn soft sm" id="solBtn">👀 Ver solución</button>
+        <button class="btn soft sm" id="learnBtn" data-i18n="learn">📖 Aprender</button>
+        <button class="btn soft sm" id="hintBtn" data-i18n="hint">💡 Pista</button>
+        <button class="btn soft sm" id="solBtn"></button>
       </div>
     </div>
     <div class="bench">
       <div>
         <div class="stagewrap" id="stageWrap">
-          <canvas id="lvCv" role="img" aria-label="Mesa de trabajo para construir la máquina"></canvas>
-          <div class="hud"><span class="tag" id="hudMode">✏️ Modo diseño</span><span class="tag" id="hudCount">🧩 0 piezas agregadas</span></div>
+          <canvas id="lvCv" role="img" data-i18n-attr="aria-label:lvCv"></canvas>
+          <div class="hud"><span class="tag" id="hudMode"></span><span class="tag" id="hudCount"></span></div>
           <div class="selbar" id="selbar" hidden>
-            <button id="rotL" aria-label="Girar a la izquierda" title="Girar (E)">⟲</button>
-            <button id="rotR" aria-label="Girar a la derecha" title="Girar (R)">⟳</button>
-            <button id="flipB" aria-label="Voltear" title="Voltear (F)">⇋</button>
-            <button id="delB" class="del" aria-label="Borrar pieza" title="Borrar (Supr)">🗑</button>
+            <button id="rotL" data-i18n-attr="aria-label:rotL;title:rotLt">⟲</button>
+            <button id="rotR" data-i18n-attr="aria-label:rotR;title:rotRt">⟳</button>
+            <button id="flipB" data-i18n-attr="aria-label:flip;title:flipt">⇋</button>
+            <button id="delB" class="del" data-i18n-attr="aria-label:del;title:delt">🗑</button>
           </div>
-          <div class="watchbar" id="watchBar" hidden>👀 Mirando cómo funciona <button id="watchEnd">Volver a mi diseño</button></div>
+          <div class="watchbar" id="watchBar" hidden><span data-i18n="watching">👀 Mirando cómo funciona</span> <button id="watchEnd" data-i18n="watchEnd">Volver a mi diseño</button></div>
           <div class="learn" id="learn" hidden><div class="learnbox" id="learnBox"></div></div>
         </div>
         <div class="controls">
-          <button class="btn go" id="playBtn">▶ Jugar</button>
-          <button class="btn soft" id="undoBtn">↶ Deshacer</button>
-          <button class="btn soft" id="clearBtn">🧹 Quitar mis piezas</button>
-          <button class="btn soft" id="resetBtn">⟳ Reiniciar nivel</button>
-          <button class="btn soft" id="slowBtn">🐢 Lento</button>
-          <button class="btn soft" id="snapBtn">🧲 Imán: sí</button>
+          <button class="btn go" id="playBtn"></button>
+          <button class="btn soft" id="undoBtn" data-i18n="undo">↶ Deshacer</button>
+          <button class="btn soft" id="clearBtn" data-i18n="clear">🧹 Quitar mis piezas</button>
+          <button class="btn soft" id="resetBtn"></button>
+          <button class="btn soft" id="slowBtn"></button>
+          <button class="btn soft" id="snapBtn"></button>
         </div>
         <p class="msg" id="lvMsg" aria-live="polite"></p>
       </div>
-      <aside class="palette" id="palette" aria-label="Piezas para construir"></aside>
+      <aside class="palette" id="palette" data-i18n-attr="aria-label:palette"></aside>
     </div>
-    <details class="teacher"><summary>Para el profe</summary><div id="teachBody"></div></details>
+    <details class="teacher"><summary data-i18n="forTeacher">Para el profe</summary><div id="teachBody"></div></details>
   </section>
 </main>
 
-<footer>Máquinas Locas de Chispa · física real con Matter.js · construye, prueba y mejora
-  <br><button class="teacherlock" id="teacherLockBtn" type="button">🔒 Modo profe</button>
+<footer><span data-i18n="footer">Máquinas Locas de Chispa · física real con Matter.js · construye, prueba y mejora</span>
+  <br><button class="teacherlock" id="teacherLockBtn" type="button"></button>
 </footer>
 
 <div class="toast" id="toast" role="status" hidden><span id="toastTxt"></span><button id="toastBtn" hidden></button></div>
@@ -348,4 +354,5 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:18px 16px 26p
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
 <script src="engine.js"></script>
+<script src="i18n.js"></script>
 <script src="app.js"></script>
