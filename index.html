@@ -18,22 +18,23 @@
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0E1230; --bg2:#141A40; --panel:#1A2048; --panel2:#20285A; --ink:#EEF0FF; --muted:#A8B0DC; --line:#2F3870;
-  --ui:#9B7BFF; --ui-d:#7C5CF0; --ui-soft:#2A2566; --go:#22C55E; --go-d:#15803D; --stop:#F2555A; --stop-d:#C23A3E;
-  --sky1:#0A0F2E; --sky2:#223070; --hill1:#27455E; --hill2:#23503E; --grass:#2E7D46; --grass-d:#1E5C31; --dirt:#5A402C; --dirt-d:#46301E;
-  --metal-l:#D5DDEA; --cloud:rgba(255,255,255,.12); --grid:rgba(255,255,255,.09); --accent:#B39BFF; --night:1;
-  --shadow:0 10px 30px rgba(0,0,0,.45); --shadow-s:0 3px 10px rgba(0,0,0,.35); color-scheme:dark;
+  --bg:#060b2a; --bg2:#0e1650; --panel:#0f1754; --panel2:#17206e; --ink:#f3f7ff; --muted:#a3b3f2; --line:#2b3a9c;
+  --ui:#8b5cff; --ui-d:#5a2fe0; --ui-soft:#251d78; --go:#12b886; --go-d:#0a7a59; --stop:#ff5c7a; --stop-d:#b81f48; --star:#ffd23f;
+  --sky1:#040820; --sky2:#1b2f7a; --hill1:#2a1b6e; --hill2:#123e72; --grass:#c6ff3d; --grass-d:#7ed321; --dirt:#0b1a4c; --dirt-d:#17306a;
+  --metal-l:#eaeeff; --cloud:rgba(255,255,255,.1); --grid:rgba(180,210,255,.16); --accent:#2de2e6; --night:1;
+  --shadow:0 10px 34px rgba(0,0,0,.5), 0 0 40px rgba(139,92,255,.18); --shadow-s:0 3px 10px rgba(0,0,0,.35); color-scheme:dark;
 }}
 :root[data-theme="dark"]{
-  --bg:#0E1230; --bg2:#141A40; --panel:#1A2048; --panel2:#20285A; --ink:#EEF0FF; --muted:#A8B0DC; --line:#2F3870;
-  --ui:#9B7BFF; --ui-d:#7C5CF0; --ui-soft:#2A2566; --go:#22C55E; --go-d:#15803D; --stop:#F2555A; --stop-d:#C23A3E;
-  --sky1:#0A0F2E; --sky2:#223070; --hill1:#27455E; --hill2:#23503E; --grass:#2E7D46; --grass-d:#1E5C31; --dirt:#5A402C; --dirt-d:#46301E;
-  --metal-l:#D5DDEA; --cloud:rgba(255,255,255,.12); --grid:rgba(255,255,255,.09); --accent:#B39BFF; --night:1;
-  --shadow:0 10px 30px rgba(0,0,0,.45); --shadow-s:0 3px 10px rgba(0,0,0,.35); color-scheme:dark;
+  --bg:#060b2a; --bg2:#0e1650; --panel:#0f1754; --panel2:#17206e; --ink:#f3f7ff; --muted:#a3b3f2; --line:#2b3a9c;
+  --ui:#8b5cff; --ui-d:#5a2fe0; --ui-soft:#251d78; --go:#12b886; --go-d:#0a7a59; --stop:#ff5c7a; --stop-d:#b81f48; --star:#ffd23f;
+  --sky1:#040820; --sky2:#1b2f7a; --hill1:#2a1b6e; --hill2:#123e72; --grass:#c6ff3d; --grass-d:#7ed321; --dirt:#0b1a4c; --dirt-d:#17306a;
+  --metal-l:#eaeeff; --cloud:rgba(255,255,255,.1); --grid:rgba(180,210,255,.16); --accent:#2de2e6; --night:1;
+  --shadow:0 10px 34px rgba(0,0,0,.5), 0 0 40px rgba(139,92,255,.18); --shadow-s:0 3px 10px rgba(0,0,0,.35); color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:17px/1.5 Nunito,"Segoe UI",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+body{background:radial-gradient(1100px 560px at 85% -8%,rgba(139,92,255,.30),transparent 60%),radial-gradient(900px 500px at -5% 25%,rgba(45,226,230,.14),transparent 60%),var(--bg);background-attachment:fixed;color:var(--ink);font:17px/1.5 Nunito,"Segoe UI",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+h1{background:linear-gradient(100deg,#fff,#c6ff3d 55%,#2de2e6);-webkit-background-clip:text;background-clip:text;color:transparent}
 h1,h2,h3{font-family:Fredoka,Nunito,sans-serif;margin:0;line-height:1.08;text-wrap:balance;font-weight:600}
 h1{font-size:clamp(26px,4.4vw,44px)} h2{font-size:clamp(21px,3vw,30px)} h3{font-size:19px}
 p{margin:.45em 0} .muted{color:var(--muted)}
@@ -88,7 +89,7 @@ main{max-width:1240px;margin:0 auto;padding:18px 16px 40px}
 .bubble::before{content:"";position:absolute;left:-10px;top:22px;border:10px solid transparent;border-right-color:var(--ui-soft);border-left:0}
 
 /* escenarios */
-.stagewrap{position:relative;border-radius:22px;overflow:hidden;box-shadow:var(--shadow);border:1.5px solid var(--line);background:var(--sky2)}
+.stagewrap{position:relative;border-radius:22px;overflow:hidden;box-shadow:var(--shadow),0 0 0 1px rgba(45,226,230,.25),0 0 46px rgba(139,92,255,.35);border:1.5px solid var(--line);background:var(--sky1)}
 .stagewrap canvas{display:block;width:100%;height:auto;touch-action:none}
 .hud{position:absolute;left:10px;top:10px;right:10px;display:flex;justify-content:space-between;gap:8px;pointer-events:none;flex-wrap:wrap}
 .hud .tag{background:rgba(20,22,50,.62);color:#fff;font-family:Fredoka,sans-serif;font-weight:600;font-size:13px;padding:5px 11px;border-radius:999px;backdrop-filter:blur(4px)}
@@ -233,6 +234,7 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:18px 16px 26p
   </nav>
   <div class="lang" id="lang" role="group" aria-label="Idioma / Language"><button type="button" data-l="es">ES</button><button type="button" data-l="en">EN</button></div>
   <button class="iconbtn" id="soundBtn" data-i18n-attr="aria-label:sound">🔊</button>
+  <button class="iconbtn" id="styleBtn" data-i18n-attr="aria-label:style;title:style">🌌</button>
   <button class="iconbtn" id="themeBtn" data-i18n-attr="aria-label:theme">🌙</button>
 </header>
 

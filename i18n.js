@@ -27,7 +27,7 @@
 
   D.es = {
     titulo: 'Máquinas Locas de Chispa', descripcion: 'Juego para aprender reacciones en cadena y las máquinas simples construyendo máquinas de Rube Goldberg con física real.',
-    back: 'Atrás', home: 'Inicio', brand: 'Máquinas Locas', sections: 'Secciones', tab1: 'Reacción en cadena', tab2: 'La máquina', tab3: 'Aprende', tab4: 'Construye', sound: 'Sonido', theme: 'Cambiar tema',
+    back: 'Atrás', home: 'Inicio', brand: 'Máquinas Locas', sections: 'Secciones', tab1: 'Reacción en cadena', tab2: 'La máquina', tab3: 'Aprende', tab4: 'Construye', sound: 'Sonido', theme: 'Cambiar tema', style: 'Estilo: onírico o natural',
     s1eyebrow: 'Paso 1 · ¿Qué es una reacción en cadena?',
     bubble0: '¡Hola! Soy <b>Chispa</b> ⚡. Mira esta fila de dominós. Si empujo <b>solo el primero</b>… ¿qué crees que pasará?',
     introCv: 'Fila de diez dominós listos para caer', predAll: '✅ Caerán todas', predOne: 'Solo caerá la primera', predNone: 'No pasará nada',
@@ -72,7 +72,7 @@
   };
   D.en = {
     titulo: "Spark's Crazy Machines", descripcion: 'A game to learn chain reactions and simple machines by building Rube Goldberg machines with real physics.',
-    back: 'Back', home: 'Home', brand: 'Crazy Machines', sections: 'Sections', tab1: 'Chain reaction', tab2: 'The machine', tab3: 'Learn', tab4: 'Build', sound: 'Sound', theme: 'Change theme',
+    back: 'Back', home: 'Home', brand: 'Crazy Machines', sections: 'Sections', tab1: 'Chain reaction', tab2: 'The machine', tab3: 'Learn', tab4: 'Build', sound: 'Sound', theme: 'Change theme', style: 'Style: dreamy or natural',
     s1eyebrow: 'Step 1 · What is a chain reaction?',
     bubble0: "Hi! I'm <b>Spark</b> ⚡. Look at this row of dominoes. If I push <b>only the first one</b>… what do you think will happen?",
     introCv: 'A row of ten dominoes ready to fall', predAll: '✅ They will all fall', predOne: 'Only the first one will fall', predNone: 'Nothing will happen',

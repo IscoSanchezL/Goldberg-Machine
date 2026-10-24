@@ -67,7 +67,7 @@
     } else E.drawIcon(cv, t);
   }
   var Theme = {
-    mode: store.get('theme', 'system'),
+    mode: store.get('theme', 'dark'),
     isDark: function () { return this.mode === 'dark' || (this.mode === 'system' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches); },
     apply: function () {
       var r = document.documentElement;
@@ -76,6 +76,15 @@
       E.refreshColors(); iconList.forEach(paintIcon);
     },
     toggle: function () { this.mode = this.isDark() ? 'light' : 'dark'; store.set('theme', this.mode); this.apply(); }
+  };
+  var Style = {
+    mode: store.get('style', 'dream'),
+    apply: function (sync) {
+      E.setStyle(this.mode); $('styleBtn').textContent = this.mode === 'dream' ? '🌌' : '🌿'; $('styleBtn').setAttribute('aria-pressed', String(this.mode === 'natural'));
+      if (sync) { Theme.mode = this.mode === 'dream' ? 'dark' : 'light'; store.set('theme', Theme.mode); }
+      Theme.apply();
+    },
+    toggle: function () { this.mode = this.mode === 'dream' ? 'natural' : 'dream'; store.set('style', this.mode); this.apply(true); }
   };
   try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { if (Theme.mode === 'system') Theme.apply(); }); } catch (e) { }
 
@@ -324,6 +333,7 @@
   $('soundBtn').addEventListener('click', function () { var on = Sound.toggle(); this.textContent = on ? '🔊' : '🔇'; if (on) Sound.play('click'); });
   $('soundBtn').textContent = Sound.isOn() ? '🔊' : '🔇';
   $('themeBtn').addEventListener('click', function () { Theme.toggle(); });
+  $('styleBtn').addEventListener('click', function () { Style.toggle(); });
 
   /* ================= 1. INTRO ================= */
   var Intro = (function () {
@@ -666,7 +676,7 @@
     if (App.screen === 'inicio') Intro.refresh(); else if (App.screen === 'maquina') Demo.refresh();
   });
   I.mount();
-  Theme.apply();
+  Style.apply(false);
   I.apply();
   route();
   started = true;
